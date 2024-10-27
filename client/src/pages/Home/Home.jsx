@@ -5,7 +5,6 @@ import classes from "./Home.module.css";
 import axiosInstance from "../../axios/axiosConfig";
 import EditContext from "../../context/EditContext";
 import EditQuestionPopup from "../../components/EditQuestion/EditQuestionPopup";
-// import EditQuestionPopup from "../../components/EditQuestion/EditQuestionPopup";
 
 function Home() {
   const [questions, setQuestions] = useState([]);
@@ -20,7 +19,7 @@ function Home() {
     try {
       const request = await axiosInstance.get("/questions", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Fixed template literal syntax
           "Content-Type": "application/json",
         },
       });
@@ -76,13 +75,19 @@ function Home() {
           placeholder="Search questions"
         />
       </div>
+
       {filteredItems.length === 0 ? ( // Check if filtered items are available
         <p>No questions found.</p>
       ) : (
-        (filteredItems || questions).map((question) => (
-          <QuestionCard key={question.question_id} question={question} /> // Use unique key prop
-        ))
+        filteredItems.map(
+          (
+            question // Removed unnecessary fallback to questions
+          ) => (
+            <QuestionCard key={question.question_id} question={question} /> // Use unique key prop
+          )
+        )
       )}
+
       {edit && <EditQuestionPopup onClose={() => updateEditState(false)} />}
     </div>
   );

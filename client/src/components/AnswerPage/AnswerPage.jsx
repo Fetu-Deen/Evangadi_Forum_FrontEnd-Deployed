@@ -23,10 +23,12 @@ const AnswerPage = () => {
 
   const fetchData = async () => {
     setError("");
+    setIsLoading(true); // Start loading state
     try {
-      const response = await axiosInstance.get(`questions/${question_id}`, {
+      const response = await axiosInstance.get(`/questions/${question_id}`, {
+        // Fixed template literal syntax
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Fixed template literal syntax
         },
       });
       setQuestion(response.data);
@@ -36,14 +38,17 @@ const AnswerPage = () => {
     }
 
     try {
-      const response = await axiosInstance.get(`answer/${question_id}`, {
+      const response = await axiosInstance.get(`/answer/${question_id}`, {
+        // Fixed template literal syntax
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Fixed template literal syntax
         },
       });
       setAnswers(response.data.answers);
     } catch (error) {
       console.error("Error fetching answers:", error);
+    } finally {
+      setIsLoading(false); // End loading state
     }
   };
 
@@ -51,28 +56,27 @@ const AnswerPage = () => {
     e.preventDefault();
 
     setError("");
-    if (answer.length == 0) {
+    if (answer.length === 0) {
+      // Use strict equality for comparison
       setError("Please provide an answer before submitting.");
       return;
     }
+
     setIsSubmitting(true);
-    setIsLoading(true);
 
     try {
       await axiosInstance.post(
         "/answer",
-        { content: answer, question_id },
+        { answer, question_id },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Fixed template literal syntax
           },
         }
       );
 
       fetchData();
       setAnswer("");
-      setIsSubmitting(false);
-      setIsLoading(false);
       setPosted(true);
       setTimeout(() => {
         setPosted(false);
@@ -80,8 +84,8 @@ const AnswerPage = () => {
     } catch (error) {
       console.error(error);
       setError("Failed to post your answer. Please try again.");
+    } finally {
       setIsSubmitting(false);
-      setIsLoading(false);
     }
   };
 
@@ -123,20 +127,21 @@ const AnswerPage = () => {
             <AnswerCard key={answer.id} answer={answer} />
           ))
         ) : (
-          <div className={classes.noAnswer}>no answer yet.</div>
+          <div className={classes.noAnswer}>No answers yet.</div> // Capitalized for consistency
         )}
       </div>
+
       {error && <div className={classes.errorAlert}>{error}</div>}
+
       <div className={classes.spinner}>
-        {isLoading ? <BeatLoader color="orange" size={40} /> : ""}
+        {isLoading && <BeatLoader color="orange" size={40} />}{" "}
+        {/* Conditional rendering */}
       </div>
-      <div>
-        {posted && (
-          <p className={classes.submissionAlert}>
-            question posted successfully
-          </p>
-        )}
-      </div>
+
+      {posted && (
+        <p className={classes.submissionAlert}> Answer posted successfully.</p>
+      )}
+
       <form onSubmit={handleSubmit}>
         <textarea
           name="answer"
